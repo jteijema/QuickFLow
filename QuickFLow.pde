@@ -6,8 +6,8 @@ float [][] Buffer2;
 
 //settings!
 int background = 50;
-boolean rain = false;
-int rainvalue = 10;
+boolean rain = true;
+int rainvalue = 5;
 int dropsize = 5;
 float flow = 20;
 boolean sound = true;
@@ -31,6 +31,7 @@ void setup() {
   Buffer2 = new float[width][height];
   
   rainsound = new SoundFile(this, "Rain.wav");
+  rainsound.loop();
   dropsound = new SoundFile(this, "Drop.wav");
   if(rain == true && sound == true)rainsound.play();
 }
@@ -67,7 +68,7 @@ void draw() {
 int count = 0;
 void rain(int weight) {
   for (int x = 0; x < weight; x++) {
-    if (count == 10){Buffer2[(int)random(width)][(int)random(height)] = dropsize; count = 0;}
+    if (count == 10){Buffer2[(int)random(5, width - 5)][(int)random(5, height - 5)] = dropsize; count = 0;}
     count++;
   }
 }
@@ -80,25 +81,25 @@ void console() {
   println("Scroll to adjust dampening length\nPress any key to reset");
   if (rain == true)println("It's Raining...");
   else println("The sky is clear...");
-  println("Flow: " + (int)flow);
+  println("Flow: " + (int)flow + ", Drop: " + (int)dropsize);
   println("Mouse x,y: " + mouseX + ", " + mouseY);
 }
 
 void mouseDragged() {
   if (mouseInBound()) {
-    Buffer1[mouseX][mouseY] = 5;
+    Buffer1[mouseX][mouseY] = dropsize;
   }
 }
 
 void mousePressed() {
   if (mouseInBound()) {
-    Buffer1[mouseX][mouseY] = 200;
+    Buffer1[mouseX][mouseY] = 40*dropsize;
     if(rain == true && sound == true)dropsound.play();
   }
 }
 
 boolean mouseInBound() {
-  if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height)return true;
+  if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height)return true;
   return false;
 }
 
@@ -111,6 +112,6 @@ void keyPressed() {
 }
 
 void mouseWheel(MouseEvent event) {
-  if (event.getCount() == 1 && flow < 50)flow--;
-  if (event.getCount() == -1 && flow > -10)flow++;
+  if (event.getCount() == -1 && flow < 50)flow++;
+  if (event.getCount() == 1 && flow > -10)flow--;
 }
