@@ -1,11 +1,12 @@
 import processing.sound.*;
+import java.util.Date;
 SoundFile rainsound, dropsound;
 
 float [][] Buffer1;
 float [][] Buffer2;
 
 //settings!
-int background = 50;
+int background = 100;
 boolean rain = true;
 int rainvalue = 5;
 int dropsize = 5;
@@ -25,17 +26,16 @@ boolean fullscreen = false;
  */
 
 void setup() {
-  if(fullscreen == true)fullScreen();
+  if (fullscreen == true)fullScreen();
   else size(750, 400);
   Buffer1 = new float[width][height];
   Buffer2 = new float[width][height];
-  
-  rainsound = new SoundFile(this, "Rain.wav");
-  rainsound.loop();
-  dropsound = new SoundFile(this, "Drop.wav");
-  if(rain == true && sound == true)rainsound.play();
-}
 
+  rainsound = new SoundFile(this, "Rain.wav");
+  dropsound = new SoundFile(this, "Drop.wav");
+  rainsound.loop();
+}
+  
 void draw() {
   console();
 
@@ -57,7 +57,7 @@ void draw() {
   }
 
   if (rain == true)rain(rainvalue);
-  
+
   float[][] temp = Buffer2;
   Buffer2 = Buffer1;
   Buffer1 = temp;
@@ -68,7 +68,10 @@ void draw() {
 int count = 0;
 void rain(int weight) {
   for (int x = 0; x < weight; x++) {
-    if (count == 10){Buffer2[(int)random(5, width - 5)][(int)random(5, height - 5)] = dropsize; count = 0;}
+    if (count == 10) {
+      Buffer2[(int)random(5, width - 5)][(int)random(5, height - 5)] = dropsize; 
+      count = 0;
+    }
     count++;
   }
 }
@@ -81,7 +84,7 @@ void console() {
   println("Scroll to adjust dampening length\nPress any key to reset");
   if (rain == true)println("It's Raining...");
   else println("The sky is clear...");
-  println("Flow: " + (int)flow + ", Drop: " + (int)dropsize);
+  println("Flow: " + (int)flow + ", Dropsize: " + (int)dropsize);
   println("Mouse x,y: " + mouseX + ", " + mouseY);
 }
 
@@ -94,7 +97,7 @@ void mouseDragged() {
 void mousePressed() {
   if (mouseInBound()) {
     Buffer1[mouseX][mouseY] = 40*dropsize;
-    if(rain == true && sound == true)dropsound.play();
+    if (rain == true && sound == true)dropsound.play();
   }
 }
 
