@@ -6,13 +6,14 @@ float [][] Buffer1;
 float [][] Buffer2;
 
 //settings!
-int background = 100;
+int background = 20;
 boolean rain = true;
-int rainvalue = 5;
+int rainvalue = 7;
 int dropsize = 5;
 float flow = 20;
-boolean sound = true;
-boolean fullscreen = false;
+boolean sound = false;
+boolean weirddot = false;
+boolean screensaver = false;
 
 /***
  *       ____        _      _    ______ _               
@@ -26,20 +27,25 @@ boolean fullscreen = false;
  */
 
 void setup() {
-  if (fullscreen == true)fullScreen();
-  else size(750, 400);
+  //size(750, 400);
+  fullScreen();
   Buffer1 = new float[width][height];
   Buffer2 = new float[width][height];
 
   rainsound = new SoundFile(this, "Rain.wav");
   dropsound = new SoundFile(this, "Drop.wav");
-  rainsound.loop();
-}
-  
-void draw() {
+  if (rain == true && sound == true)rainsound.loop();
   console();
+}
 
-  float dampening = (1 / (1 + pow((float)Math.E, -(flow/5))));
+
+void draw() {
+  if (weirddot == true)Buffer1[width/2][height/2] = 20*dropsize;
+  if (screensaver == true)screensaver();
+  ripple();
+}
+
+void ripple() {
   loadPixels();
   for (int x = 1; x < width - 1; x++) {
     for (int y = 1; y < height - 1; y++) {
@@ -49,7 +55,7 @@ void draw() {
         Buffer1[x][y + 1] +
         Buffer1[x][y - 1]) / 2 - Buffer2[x][y];
 
-      Buffer2[x][y] *= dampening;
+      Buffer2[x][y] *= dampening(flow);
 
       int index = x + y * width;
       pixels[index] = color(Buffer1[x][y]*100 + background);
@@ -65,6 +71,21 @@ void draw() {
   updatePixels();
 }
 
+int sscount = 0;
+int ssswitch = 1000;
+void screensaver() {
+  if (sscount == ssswitch*1/3) {
+    flow = 45;  
+    console();
+  }
+  if (sscount == ssswitch) {
+    flow = 15;
+    sscount = 0;
+    console();
+  }
+  sscount++;
+}
+
 int count = 0;
 void rain(int weight) {
   for (int x = 0; x < weight; x++) {
@@ -78,6 +99,7 @@ void rain(int weight) {
 
 
 // Functional ===========================================================
+
 void console() {
   println(new String(new char[20]).replace("\0", "\r\n"));
   println("QuickFlow");
@@ -91,13 +113,15 @@ void console() {
 void mouseDragged() {
   if (mouseInBound()) {
     Buffer1[mouseX][mouseY] = dropsize;
+    console();
   }
 }
 
 void mousePressed() {
   if (mouseInBound()) {
     Buffer1[mouseX][mouseY] = 40*dropsize;
-    if (rain == true && sound == true)dropsound.play();
+    if (sound == true)dropsound.play();
+    console();
   }
 }
 
@@ -112,9 +136,15 @@ void keyPressed() {
       Buffer2[x][y] = Buffer1[x][y] = 0;
     }
   }
+  println("Canvas reset!");
 }
 
 void mouseWheel(MouseEvent event) {
   if (event.getCount() == -1 && flow < 50)flow++;
   if (event.getCount() == 1 && flow > -10)flow--;
+  console();
+}
+
+float dampening(float flow) {
+  return (1 / (1 + pow((float)Math.E, -(flow/5))));
 }
