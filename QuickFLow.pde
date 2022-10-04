@@ -1,6 +1,4 @@
-import processing.sound.*;
 import java.util.Date;
-SoundFile rainsound, dropsound;
 
 float [][] Buffer1;
 float [][] Buffer2;
@@ -11,7 +9,6 @@ boolean rain = true;
 int rainvalue = 7;
 int dropsize = 5;
 float flow = 20;
-boolean sound = false;
 boolean weirddot = false;
 boolean screensaver = false;
 
@@ -27,14 +24,11 @@ boolean screensaver = false;
  */
 
 void setup() {
-  //size(750, 400);
-  fullScreen();
+  size(750, 400);
+  //fullScreen();
   Buffer1 = new float[width][height];
   Buffer2 = new float[width][height];
 
-  rainsound = new SoundFile(this, "Rain.wav");
-  dropsound = new SoundFile(this, "Drop.wav");
-  if (rain == true && sound == true)rainsound.loop();
   console();
 }
 
@@ -120,7 +114,6 @@ void mouseDragged() {
 void mousePressed() {
   if (mouseInBound()) {
     Buffer1[mouseX][mouseY] = 40*dropsize;
-    if (sound == true)dropsound.play();
     console();
   }
 }
